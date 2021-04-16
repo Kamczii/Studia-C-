@@ -26,7 +26,22 @@ private:
     node* head_beg, * head_end;
     node* prev, *next;
     node* actual;
+    
+    void reset_actual()
+    {
+        prev = nullptr;
+        actual = nullptr;
+        next = nullptr;
+    }
 
+    
+
+    void init_actual(node* new_el)//uruchamiany gdy dodajemy pierwszy element do listy
+    {
+        prev = head_beg;
+        actual = new_el;
+        next = head_end;
+    }
 public:
     XOR() :head_beg(new node()), head_end(new node()), prev(nullptr),next(nullptr), actual(nullptr) {
         head_beg->npx = (ptr)head_end;
@@ -34,7 +49,22 @@ public:
         head_end->npx = (ptr)head_beg;
         head_end->val = NULL;
     }
+    
+    ~XOR() {
+        node* prevs = (node*)head_beg;
+        node* current = (node*)head_beg->npx;
 
+        while (current->val != NEGATIVE) {
+            node* temp = current;
+            current = (node*)((ptr)prevs ^ current->npx);
+            free(prevs);
+            prevs = temp;
+        }
+        if(prevs != NULL)
+            free(prevs);
+        free(current);
+    }
+    
     void add_act_n(int n) {
         if (actual != nullptr) { //sprawdza czy aktualny istnieje
 
@@ -104,13 +134,6 @@ public:
 
         head_end->npx = (ptr)new_el;
 
-    }
-
-    void init_actual(node* new_el)//uruchamiany gdy dodajemy pierwszy element do listy
-    {
-        prev = head_beg;
-        actual = new_el;
-        next = head_end;
     }
 
     int get_actual() const {
@@ -346,13 +369,6 @@ public:
             }
         }
         std::cout << "\n";
-    }
-
-    void reset_actual()
-    {
-        prev = nullptr;
-        actual = nullptr;
-        next = nullptr;
     }
 
     void print_forward() const {
